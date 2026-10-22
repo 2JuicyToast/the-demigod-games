@@ -1647,8 +1647,8 @@ def stall(bm, ex, x, y, rot=0.0, motif="forge"):
         for i in range(3):
             sword(bm, -1.4 + i * 0.35, 0.75, 0.05, 1.1)
         barrel(bm, 1.2, 0.9)
-        lantern(bm, ex, 0.0, 0.0, 2.6, 0.55)
         banner(bm, 0.0, -1.35, 3.2, 1.2, 1.8, motif=motif, col=C.GOLD, both=False)
+    lantern(bm, ex, x, y, 2.6, 0.55)          # outside the `with` so the glow companion lands on the stall, not at the origin
 
 
 def plaza_floor(bm, ex):
