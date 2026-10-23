@@ -1546,12 +1546,12 @@ def armory_props(bm, ex):
         for y in ARC_YS:                                                       # shield on every column
             with bm.at((sx * 7.0, y, 0), rz=-sx * math.pi / 2):
                 shield(bm, (0, -0.85, 3.7), 0.5, C.MAROON, C.BRONZE, "armory", C.GOLD)
-    for sx in (-1, 1):                                                         # honour-guard statues by the door
-        with bm.at((sx * 5.6, -12.2, z)):
+    for i, sx in enumerate((-1, 1)):                                           # EMPTY honour-guard pedestals by the door
+        with bm.at((sx * 5.6, -12.2, z)):                                       # (statues removed: Roblox NPCs stand here)
             box(bm, (0, 0, 0.35), (1.7, 1.7, 0.7), C.STONE_LIGHT, ch=0.04)
             box(bm, (0, 0, 0.72), (1.8, 1.8, 0.06), C.BRONZE)
-            armor_suit(bm, "steel", 1.25, z0=0.75)
-        collide("Armory_Statue", sx * 5.6, -12.2, z + 1.6, 1.7, 1.7, 3.2)
+        collide("Armory_Pedestal", sx * 5.6, -12.2, z + 0.375, 1.8, 1.8, 0.75)
+        marker("Armory_NPC_Pedestal_%02d" % (i + 1), "npc_pedestal", "Empty pedestal (NPC spot)", sx * 5.6, -12.2, z + 0.75)
     for sx in (-1, 1):                                                         # spear stands flanking the nave end
         for i in range(5):
             spear(bm, sx * 13.0 + (i - 2) * 0.0, 11.8 + 0.3 * i - 0.6, z + 0.2, 3.0 + 0.1 * (i % 2), lean=(0.0, 0.0))
