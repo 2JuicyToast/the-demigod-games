@@ -6,7 +6,7 @@
 # What this builds (each is ONE mesh = ONE draw call in Roblox):
 #   Entrance_PillarL / Entrance_PillarR   banners, ivy, moss included
 #   Entrance_Lintel                       Greek-key frieze, CAMP DEMISOUL lettering, bull crest
-#   Entrance_Palladium                    rock mound, plinth, Athena statue (replaces the tree)
+#   Entrance_Palladium                    rock mound, stepped EMPTY pedestal (for a Roblox NPC)
 #   Entrance_Brazier_L / _R               one shared mesh, placed twice
 #   Entrance_Glow                         flames, halo, gem  -> set Material = Neon in Studio
 #   Entrance_Path                         single smooth ribbon, worn centre strip
@@ -538,14 +538,7 @@ def P(x, y, z):
 
 
 def build_palladium(bm, glow):
-    K = 1.7          # statue scale (raise for an even bigger statue)
-    ZB = 4.4         # top of the plinth = floor of the statue
-
-    def sp(x, y, z):
-        return (PX + K * x, PY + K * y, ZB + K * z)
-
-    def sT(x, y, z):
-        return T(sp(x, y, z))
+    ZB = 4.4         # top of the plinth = where a Roblox NPC will stand
 
     # rocky raised mound (replaces the old tree), irregular on purpose
     frustum(bm, T((PX, PY, -0.3)), 7.7, 7.4, 0.65, C["STONE_DARK"], segs=12, jitter=0.07)
@@ -570,73 +563,9 @@ def build_palladium(bm, glow):
     box(bm, P(0, -1.23, 3.25), (2.2, 0.06, 0.6), C["BRONZE_DARK"])           # name plaque
     text(bm, "PALLADIUM", P(0, -1.275, 3.25), 0.24, C["CREAM"], depth=0.03, stroke=0.2)
 
-    # ---- the statue (local coords: x right, y toward the front = -y, z up from the plinth) ----
-    for sx in (-1, 1):                                                       # sandals
-        box(bm, sp(sx * 0.2, -0.5, 0.07), (0.24 * K, 0.34 * K, 0.14 * K), C["STONE_LIGHT"])
-    frustum(bm, sT(0, 0, 0.0), 0.66 * K, 0.64 * K, 0.12 * K, C["STONE_LIGHT"], segs=10)   # hem band
-    frustum(bm, sT(0, 0, 0.0), 0.62 * K, 0.50 * K, 1.70 * K, C["MARBLE"], segs=10)        # robe
-    for i in range(9):                                                       # drapery folds
-        a = -math.pi / 2 + (i - 4) * 0.36
-        rb, rt = 0.63, 0.52
-        beam(bm, sp(rb * math.cos(a), rb * math.sin(a), 0.12), sp(rt * math.cos(a), rt * math.sin(a), 1.55),
-             0.04 * K, 0.02 * K, C["STONE_LIGHT"], segs=4)
-    frustum(bm, sT(0, 0, 1.58), 0.55 * K, 0.55 * K, 0.14 * K, C["BRONZE"], segs=10)       # belt
-    frustum(bm, sT(0, 0, 1.70), 0.50 * K, 0.44 * K, 0.80 * K, C["MARBLE"], segs=10)       # torso
-    frustum(bm, sT(0, 0, 2.10), 0.60 * K, 0.38 * K, 0.45 * K, C["BRONZE"], segs=10)       # aegis collar
-    for i in range(12):                                                      # fringe points
-        a = math.tau * i / 12
-        frustum(bm, sT(0.58 * math.cos(a), 0.58 * math.sin(a), 2.14) @ Matrix.Rotation(math.pi, 4, "X"),
-                0.05 * K, 0.0, 0.16 * K, C["BRONZE_DARK"], segs=4)
-    for sx in (-1, 1):                                                       # rounded shoulders
-        blob(bm, sp(sx * 0.52, 0, 2.42), (0.18 * K, 0.18 * K, 0.16 * K), C["MARBLE"], segs=7, rings=4)
-    frustum(bm, sT(0, 0, 2.55), 0.15 * K, 0.15 * K, 0.25 * K, C["MARBLE"], segs=8)        # neck
-    # head, face, hair
-    blob(bm, sp(0, 0.10, 2.92), (0.27 * K, 0.22 * K, 0.30 * K), C["BRONZE_DARK"], segs=8, rings=4)   # back hair
-    blob(bm, sp(0, 0, 3.0), (0.27 * K, 0.28 * K, 0.31 * K), C["MARBLE"], segs=10, rings=6)
-    box(bm, sp(0, -0.285, 2.84), (0.12 * K, 0.025 * K, 0.025 * K), C["STONE_DARK"])      # mouth
-    for sx in (-1, 1):
-        beam(bm, sp(sx * 0.2, 0.12, 2.9), sp(sx * 0.28, 0.10, 2.1), 0.07 * K, 0.05 * K, C["BRONZE_DARK"], 5)  # braids
-        box(bm, sp(sx * 0.28, -0.1, 2.93), (0.05 * K, 0.30 * K, 0.32 * K), C["BRONZE"])    # cheek guards
-        box(glow, sp(sx * 0.1, -0.27, 3.03), (0.09 * K, 0.03 * K, 0.035 * K), C["GLOW"])   # glowing eyes
-    blob(bm, sp(0, 0, 3.25), (0.33 * K, 0.34 * K, 0.27 * K), C["BRONZE"], segs=10, rings=5)  # helmet dome
-    box(bm, sp(0, -0.30, 3.0), (0.06 * K, 0.06 * K, 0.32 * K), C["BRONZE"])               # nose guard
-    crest = [(-0.28, 3.36), (-0.14, 3.50), (0.06, 3.55), (0.26, 3.48), (0.42, 3.32), (0.50, 3.10)]
-    for (y0, z0), (y1, z1) in zip(crest[:-1], crest[1:]):
-        beam(bm, sp(0, y0, z0), sp(0, y1, z1), 0.07 * K, 0.07 * K, C["MAROON"], segs=4)
-    # spear arm (viewer's left)
-    beam(bm, sp(-0.55, 0, 2.38), sp(-0.75, -0.10, 1.85), 0.11 * K, 0.09 * K, C["MARBLE"], 6)
-    beam(bm, sp(-0.75, -0.10, 1.85), sp(-0.80, -0.40, 2.12), 0.09 * K, 0.08 * K, C["MARBLE"], 6)
-    beam(bm, sp(-0.77, -0.22, 1.95), sp(-0.80, -0.34, 2.06), 0.105 * K, 0.105 * K, C["BRONZE"], 6)   # bracer
-    blob(bm, sp(-0.80, -0.40, 2.12), (0.11 * K, 0.11 * K, 0.10 * K), C["MARBLE"], segs=6, rings=3)
-    beam(bm, sp(-0.80, -0.40, 0.0), sp(-0.80, -0.40, 5.0), 0.05 * K, 0.045 * K, C["WOOD"], 6)
-    for zb in (2.9, 4.3):
-        frustum(bm, sT(-0.80, -0.40, zb), 0.07 * K, 0.07 * K, 0.12 * K, C["BRONZE"], segs=6)
-    frustum(bm, sT(-0.80, -0.40, 4.9), 0.075 * K, 0.05 * K, 0.22 * K, C["BRONZE"], segs=6)
-    prism(bm, [(0, 0), (0.13, 0.18), (0, 0.75), (-0.13, 0.18)], sp(-0.80, -0.40, 5.1), K, 0.035 * K, C["BRONZE"])
-    # shield arm (viewer's right) with ringed, bull-crest shield
-    beam(bm, sp(0.55, 0, 2.38), sp(0.72, -0.10, 1.85), 0.11 * K, 0.09 * K, C["MARBLE"], 6)
-    beam(bm, sp(0.72, -0.10, 1.85), sp(0.80, -0.30, 1.80), 0.09 * K, 0.08 * K, C["MARBLE"], 6)
-    frustum(bm, sT(0.90, -0.36, 1.85) @ ROT_X90, 0.62 * K, 0.62 * K, 0.12 * K, C["BRONZE"], segs=14)
-    frustum(bm, sT(0.90, -0.47, 1.85) @ ROT_X90, 0.54 * K, 0.54 * K, 0.04 * K, C["MAROON"], segs=14)
-    ring(bm, sT(0.90, -0.47, 1.85) @ ROT_X90, 0.62 * K, 0.54 * K, 0.06 * K, C["BRONZE_DARK"], segs=14)
-    emblem(bm, sp(0.90, -0.55, 1.85), 0.45 * K, C["CREAM"], C["MAROON"], t=0.08)
-    # Athena's owl perched on the plinth
-    ox, oy, _ = P(1.15, -1.05, 0)
-    blob(bm, (ox, oy, ZB + 0.42), (0.26, 0.24, 0.42), C["MARBLE"], segs=8, rings=5)
-    blob(bm, (ox, oy - 0.02, ZB + 0.88), (0.26, 0.24, 0.20), C["MARBLE"], segs=8, rings=4)
-    for sx in (-1, 1):
-        frustum(bm, T((ox + sx * 0.15, oy, ZB + 1.02)), 0.07, 0.0, 0.2, C["STONE_LIGHT"], segs=4)   # ear tufts
-        blob(bm, (ox + sx * 0.25, oy + 0.02, ZB + 0.42), (0.07, 0.2, 0.34), C["STONE_LIGHT"], segs=5, rings=3)  # wings
-        blob(glow, (ox + sx * 0.1, oy - 0.2, ZB + 0.9), (0.06, 0.04, 0.06), C["GLOW"], segs=5, rings=3)       # eyes
-    frustum(bm, T((ox, oy - 0.24, ZB + 0.84)) @ ROT_X90, 0.05, 0.0, 0.10, C["BRONZE"], segs=4)       # beak
-    # glow pieces go to the separate Neon mesh: halo with rays, belt jewel, chest gem
-    ring(glow, sT(0, 0.38, 3.05) @ ROT_X90, 0.78 * K, 0.64 * K, 0.08 * K, C["GLOW"], segs=24)
-    for i in range(8):
-        a = math.tau * (i + 0.5) / 8
-        beam(glow, sp(0.80 * math.cos(a), 0.38, 3.05 + 0.80 * math.sin(a)),
-             sp(1.02 * math.cos(a), 0.38, 3.05 + 1.02 * math.sin(a)), 0.045 * K, 0.0, C["GLOW"], segs=3)
-    blob(glow, sp(0, -0.55, 1.65), (0.07 * K, 0.04 * K, 0.07 * K), C["GLOW"], segs=6, rings=3)
-    blob(glow, sp(0, -0.50, 2.25), (0.09 * K, 0.05 * K, 0.10 * K), C["GLOW"], segs=6, rings=3)
+    # The statue has been removed: the plinth stays EMPTY for a future Roblox NPC / character statue.
+    # Stand the NPC on the top face of the plinth: world (PX, PY), height ZB, in metres x STUD_SCALE.
+    print("Palladium pedestal (empty) top centre, studs:", (PX * STUD_SCALE, PY * STUD_SCALE, ZB * STUD_SCALE))
 
 
 # ============================ 4) BRAZIER =====================================
